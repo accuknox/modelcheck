@@ -1,0 +1,141 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build & Publish Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install build tools
+        run: pip install build
+
+      - name: Build source distribution and wheel
+        run: python -m build
+
+      # Extract the tag name without the "v" prefix for the PyPI version
+      - name: Parse version
+        id: version
+        run: echo "ver=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "modelcheck ${{ github.ref_name }}"
+          files: |
+            dist/*.whl
+            dist/*.tar.gz
+          body: |
+            ## modelcheck ${{ github.ref_name }}
+
+            **modelcheck** is a command-line security evaluation tool for ML models (HuggingFace Hub or local paths).
+            It assesses models across four dimensions: Supply Chain & Provenance, Adversarial Robustness, Data & Privacy Risks, and Model File Security.
+
+            ---
+
+            ### Quick Install
+
+            **Recommended — install directly from this release:**
+
+            ```bash
+            pip install https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/modelcheck-${{ steps.version.outputs.ver }}-py3-none-any.whl
+            ```
+
+            Or install from the source tarball:
+
+            ```bash
+            pip install https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/modelcheck-${{ steps.version.outputs.ver }}.tar.gz
+            ```
+
+            > **Python 3.10 or later is required.**
+
+            ---
+
+            ### Usage
+
+            **Scan a single HuggingFace model:**
+
+            ```bash
+            modelcheck scan google-bert/bert-base-uncased
+            ```
+
+            **Scan multiple models in parallel (generates a comparison report):**
+
+            ```bash
+            modelcheck scan google-bert/bert-base-uncased distilbert/distilbert-base-uncased
+            ```
+
+            **Scan a local model directory:**
+
+            ```bash
+            modelcheck scan ./my-local-model
+            ```
+
+            **Common options:**
+
+            | Flag | Description |
+            |------|-------------|
+            | `--token / -t` | HuggingFace API token (or set `HF_TOKEN` env var) |
+            | `--html FILE` | Write HTML report to a custom path |
+            | `--output FILE` | Export JSON report |
+            | `--parallelism N` | Max parallel scans (default: 4) |
+            | `--skip MODULE` | Skip a module: `provenance`, `adversarial`, `privacy`, `file-security` |
+            | `--download` | Download model files for deep static analysis |
+            | `--no-probes` | Disable live LLM adversarial probes |
+            | `--fail-on LEVEL` | Exit non-zero if findings at this severity or above are found (default: `high`) |
+
+            **List all available security checks:**
+
+            ```bash
+            modelcheck list-checks
+            ```
+
+            **Show basic model info without a full scan:**
+
+            ```bash
+            modelcheck info google-bert/bert-base-uncased
+            ```
+
+            ---
+
+            ### Optional: Full Adversarial Testing
+
+            To enable ART (image models) and TextAttack (NLP models) evaluations:
+
+            ```bash
+            pip install "modelcheck[adversarial]"
+            ```
+
+            ---
+
+            ### HuggingFace Token
+
+            Some models require authentication. Create a fine-grained token at
+            https://huggingface.co/settings/tokens/new?tokenType=fineGrained
+            with **"Read access to contents of all public gated repos you can access"**,
+            then pass it via `--token` or the `HF_TOKEN` environment variable.
+
+            ---
+
+            ### Output
+
+            Each scan produces:
+            - A **rich terminal report** with findings grouped by severity
+            - A self-contained **HTML security card** (single or multi-model comparison)
+            - An optional **JSON report** and **CycloneDX AI BOM**
