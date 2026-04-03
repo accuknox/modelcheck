@@ -1,0 +1,468 @@
+# modelcheck Compliance & Attack Framework Mappings
+# ─────────────────────────────────────────────────────────────────────────────
+# Maps each finding ID (or prefix pattern ending in *) to one or more
+# references in external security/compliance frameworks.
+#
+# Supported frameworks:
+#   OWASP LLM Top 10  – https://owasp.org/www-project-top-10-for-large-language-model-applications/
+#   MITRE ATLAS        – https://atlas.mitre.org/
+#   MITRE ATT&CK       – https://attack.mitre.org/
+#   NIST AI RMF        – https://airc.nist.gov/
+#   EU AI Act          – https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689
+#   CWE                – https://cwe.mitre.org/
+#   ISO/IEC 42001      – https://www.iso.org/standard/81230.html
+# ─────────────────────────────────────────────────────────────────────────────
+
+version: "1.0"
+
+# Color palette used when rendering framework badges in HTML reports
+framework_colors:
+  "OWASP LLM Top 10": { bg: "#FFF1E5", fg: "#BC4C00" }
+  "MITRE ATLAS":      { bg: "#FFEBE9", fg: "#CF222E" }
+  "MITRE ATT&CK":     { bg: "#FFEBE9", fg: "#9A0000" }
+  "NIST AI RMF":      { bg: "#DDF4FF", fg: "#0550AE" }
+  "EU AI Act":        { bg: "#F0E6FF", fg: "#6A2FCF" }
+  "CWE":              { bg: "#F6F8FA", fg: "#57606A" }
+  "ISO/IEC 42001":    { bg: "#D3F9E0", fg: "#0A6640" }
+
+# ── Findings → framework references ──────────────────────────────────────────
+findings:
+
+  # ── Adversarial / LLM probes ───────────────────────────────────────────────
+
+  ADV-LLM-001:
+    - framework: "OWASP LLM Top 10"
+      id: "LLM01"
+      name: "Prompt Injection"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM01_2025_Prompt_Injection.html"
+    - framework: "MITRE ATLAS"
+      id: "AML.T0051"
+      name: "LLM Prompt Injection"
+      url: "https://atlas.mitre.org/techniques/AML.T0051"
+    - framework: "MITRE ATLAS"
+      id: "AML.T0054"
+      name: "LLM Jailbreak"
+      url: "https://atlas.mitre.org/techniques/AML.T0054"
+
+  ADV-LLM-002:
+    - framework: "OWASP LLM Top 10"
+      id: "LLM01"
+      name: "Prompt Injection"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM01_2025_Prompt_Injection.html"
+    - framework: "MITRE ATLAS"
+      id: "AML.T0051"
+      name: "LLM Prompt Injection"
+      url: "https://atlas.mitre.org/techniques/AML.T0051"
+
+  ADV-LLM-003:
+    - framework: "OWASP LLM Top 10"
+      id: "LLM07"
+      name: "System Prompt Leakage"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM07_2025_System_Prompt_Leakage.html"
+    - framework: "MITRE ATLAS"
+      id: "AML.T0056"
+      name: "LLM Meta Prompt Extraction"
+      url: "https://atlas.mitre.org/techniques/AML.T0056"
+    - framework: "OWASP LLM Top 10"
+      id: "LLM02"
+      name: "Sensitive Information Disclosure"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM02_2025_Sensitive_Information_Disclosure.html"
+
+  ADV-LLM-004:
+    - framework: "OWASP LLM Top 10"
+      id: "LLM01"
+      name: "Prompt Injection"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM01_2025_Prompt_Injection.html"
+    - framework: "MITRE ATLAS"
+      id: "AML.T0051"
+      name: "LLM Prompt Injection"
+      url: "https://atlas.mitre.org/techniques/AML.T0051"
+
+  ADV-LLM-005:
+    - framework: "OWASP LLM Top 10"
+      id: "LLM01"
+      name: "Prompt Injection"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM01_2025_Prompt_Injection.html"
+    - framework: "MITRE ATLAS"
+      id: "AML.T0051"
+      name: "LLM Prompt Injection"
+      url: "https://atlas.mitre.org/techniques/AML.T0051"
+
+  ADV-ART-001:
+    - framework: "MITRE ATLAS"
+      id: "AML.T0043"
+      name: "Craft Adversarial Data"
+      url: "https://atlas.mitre.org/techniques/AML.T0043"
+    - framework: "NIST AI RMF"
+      id: "MEASURE 2.5"
+      name: "AI risk metrics — robustness"
+      url: "https://airc.nist.gov/Docs/1"
+
+  ADV-TA-001:
+    - framework: "MITRE ATLAS"
+      id: "AML.T0043"
+      name: "Craft Adversarial Data"
+      url: "https://atlas.mitre.org/techniques/AML.T0043"
+    - framework: "OWASP LLM Top 10"
+      id: "LLM05"
+      name: "Improper Output Handling"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM05_2025_Improper_Output_Handling.html"
+
+  ADV-LLM-AUTH:
+    - framework: "NIST AI RMF"
+      id: "GOVERN 1.4"
+      name: "Organizational teams understand their AI risk roles"
+      url: "https://airc.nist.gov/Docs/1"
+
+  # ── Supply Chain & Provenance ──────────────────────────────────────────────
+
+  PROV-001:
+    - framework: "OWASP LLM Top 10"
+      id: "LLM03"
+      name: "Supply Chain"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM03_2025_Supply_Chain.html"
+    - framework: "MITRE ATLAS"
+      id: "AML.T0010"
+      name: "ML Supply Chain Compromise"
+      url: "https://atlas.mitre.org/techniques/AML.T0010"
+    - framework: "MITRE ATT&CK"
+      id: "T1195.001"
+      name: "Supply Chain Compromise"
+      url: "https://attack.mitre.org/techniques/T1195/001/"
+    - framework: "NIST AI RMF"
+      id: "MANAGE 2.2"
+      name: "Mechanisms for incident response"
+      url: "https://airc.nist.gov/Docs/1"
+
+  PROV-002:
+    - framework: "OWASP LLM Top 10"
+      id: "LLM03"
+      name: "Supply Chain"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM03_2025_Supply_Chain.html"
+    - framework: "MITRE ATLAS"
+      id: "AML.T0010"
+      name: "ML Supply Chain Compromise"
+      url: "https://atlas.mitre.org/techniques/AML.T0010"
+    - framework: "NIST AI RMF"
+      id: "MAP 1.5"
+      name: "Organizational risk priorities"
+      url: "https://airc.nist.gov/Docs/1"
+
+  PROV-004:
+    - framework: "NIST AI RMF"
+      id: "GOVERN 1.1"
+      name: "Policies are in place for AI risk"
+      url: "https://airc.nist.gov/Docs/1"
+    - framework: "EU AI Act"
+      id: "Art. 13"
+      name: "Transparency and provision of information"
+      url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+    - framework: "ISO/IEC 42001"
+      id: "6.1.2"
+      name: "AI risk assessment"
+      url: "https://www.iso.org/standard/81230.html"
+
+  PROV-005:
+    - framework: "NIST AI RMF"
+      id: "GOVERN 1.1"
+      name: "Policies are in place for AI risk"
+      url: "https://airc.nist.gov/Docs/1"
+    - framework: "EU AI Act"
+      id: "Art. 13"
+      name: "Transparency and provision of information"
+      url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+
+  PROV-006:
+    - framework: "OWASP LLM Top 10"
+      id: "LLM03"
+      name: "Supply Chain"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM03_2025_Supply_Chain.html"
+    - framework: "MITRE ATLAS"
+      id: "AML.T0010"
+      name: "ML Supply Chain Compromise"
+      url: "https://atlas.mitre.org/techniques/AML.T0010"
+
+  PROV-007:
+    - framework: "OWASP LLM Top 10"
+      id: "LLM03"
+      name: "Supply Chain"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM03_2025_Supply_Chain.html"
+    - framework: "MITRE ATLAS"
+      id: "AML.T0010"
+      name: "ML Supply Chain Compromise"
+      url: "https://atlas.mitre.org/techniques/AML.T0010"
+    - framework: "NIST AI RMF"
+      id: "MEASURE 2.2"
+      name: "Scientific findings on AI risk"
+      url: "https://airc.nist.gov/Docs/1"
+
+  PROV-008:
+    - framework: "NIST AI RMF"
+      id: "MAP 1.1"
+      name: "Context is established for AI risk assessment"
+      url: "https://airc.nist.gov/Docs/1"
+    - framework: "EU AI Act"
+      id: "Art. 13"
+      name: "Transparency and provision of information"
+      url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+    - framework: "ISO/IEC 42001"
+      id: "8.4"
+      name: "Documentation of AI system"
+      url: "https://www.iso.org/standard/81230.html"
+
+  PROV-010:
+    - framework: "OWASP LLM Top 10"
+      id: "LLM03"
+      name: "Supply Chain"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM03_2025_Supply_Chain.html"
+    - framework: "MITRE ATLAS"
+      id: "AML.T0010"
+      name: "ML Supply Chain Compromise"
+      url: "https://atlas.mitre.org/techniques/AML.T0010"
+    - framework: "NIST AI RMF"
+      id: "MAP 1.5"
+      name: "Organizational risk priorities"
+      url: "https://airc.nist.gov/Docs/1"
+
+  # Local provenance
+  PROV-L002:
+    - framework: "NIST AI RMF"
+      id: "MAP 1.1"
+      name: "Context is established for AI risk assessment"
+      url: "https://airc.nist.gov/Docs/1"
+    - framework: "EU AI Act"
+      id: "Art. 13"
+      name: "Transparency and provision of information"
+      url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+
+  PROV-L003:
+    - framework: "OWASP LLM Top 10"
+      id: "LLM03"
+      name: "Supply Chain"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM03_2025_Supply_Chain.html"
+    - framework: "NIST AI RMF"
+      id: "MAP 1.1"
+      name: "Context is established for AI risk assessment"
+      url: "https://airc.nist.gov/Docs/1"
+
+  # ── File Security ──────────────────────────────────────────────────────────
+
+  FSEC-HF-001:
+    - framework: "OWASP LLM Top 10"
+      id: "LLM03"
+      name: "Supply Chain"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM03_2025_Supply_Chain.html"
+    - framework: "MITRE ATLAS"
+      id: "AML.T0018"
+      name: "Backdoor ML Model"
+      url: "https://atlas.mitre.org/techniques/AML.T0018"
+    - framework: "MITRE ATT&CK"
+      id: "T1195.001"
+      name: "Supply Chain Compromise"
+      url: "https://attack.mitre.org/techniques/T1195/001/"
+
+  FSEC-001:
+    - framework: "OWASP LLM Top 10"
+      id: "LLM03"
+      name: "Supply Chain"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM03_2025_Supply_Chain.html"
+    - framework: "CWE"
+      id: "CWE-502"
+      name: "Deserialization of Untrusted Data"
+      url: "https://cwe.mitre.org/data/definitions/502.html"
+    - framework: "MITRE ATLAS"
+      id: "AML.T0010"
+      name: "ML Supply Chain Compromise"
+      url: "https://atlas.mitre.org/techniques/AML.T0010"
+
+  FSEC-002:
+    - framework: "OWASP LLM Top 10"
+      id: "LLM03"
+      name: "Supply Chain"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM03_2025_Supply_Chain.html"
+    - framework: "CWE"
+      id: "CWE-502"
+      name: "Deserialization of Untrusted Data"
+      url: "https://cwe.mitre.org/data/definitions/502.html"
+    - framework: "NIST AI RMF"
+      id: "MANAGE 1.1"
+      name: "Risks based on assessments are prioritised"
+      url: "https://airc.nist.gov/Docs/1"
+
+  FSEC-PKL-001:
+    - framework: "OWASP LLM Top 10"
+      id: "LLM03"
+      name: "Supply Chain"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM03_2025_Supply_Chain.html"
+    - framework: "MITRE ATLAS"
+      id: "AML.T0018"
+      name: "Backdoor ML Model"
+      url: "https://atlas.mitre.org/techniques/AML.T0018"
+    - framework: "MITRE ATLAS"
+      id: "AML.T0010"
+      name: "ML Supply Chain Compromise"
+      url: "https://atlas.mitre.org/techniques/AML.T0010"
+    - framework: "MITRE ATT&CK"
+      id: "T1195.001"
+      name: "Supply Chain Compromise"
+      url: "https://attack.mitre.org/techniques/T1195/001/"
+    - framework: "CWE"
+      id: "CWE-502"
+      name: "Deserialization of Untrusted Data"
+      url: "https://cwe.mitre.org/data/definitions/502.html"
+
+  FSEC-PKL-002:
+    - framework: "CWE"
+      id: "CWE-502"
+      name: "Deserialization of Untrusted Data"
+      url: "https://cwe.mitre.org/data/definitions/502.html"
+    - framework: "OWASP LLM Top 10"
+      id: "LLM03"
+      name: "Supply Chain"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM03_2025_Supply_Chain.html"
+
+  FSEC-EMBED-001:
+    - framework: "MITRE ATLAS"
+      id: "AML.T0018"
+      name: "Backdoor ML Model"
+      url: "https://atlas.mitre.org/techniques/AML.T0018"
+    - framework: "CWE"
+      id: "CWE-506"
+      name: "Embedded Malicious Code"
+      url: "https://cwe.mitre.org/data/definitions/506.html"
+
+  # ── Privacy ────────────────────────────────────────────────────────────────
+
+  PRIV-PII-API_KEY:
+    - framework: "OWASP LLM Top 10"
+      id: "LLM02"
+      name: "Sensitive Information Disclosure"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM02_2025_Sensitive_Information_Disclosure.html"
+    - framework: "CWE"
+      id: "CWE-312"
+      name: "Cleartext Storage of Sensitive Information"
+      url: "https://cwe.mitre.org/data/definitions/312.html"
+    - framework: "NIST AI RMF"
+      id: "MEASURE 2.5"
+      name: "Privacy risk measurement"
+      url: "https://airc.nist.gov/Docs/1"
+
+  PRIV-PII-AWS_KEY:
+    - framework: "OWASP LLM Top 10"
+      id: "LLM02"
+      name: "Sensitive Information Disclosure"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM02_2025_Sensitive_Information_Disclosure.html"
+    - framework: "CWE"
+      id: "CWE-312"
+      name: "Cleartext Storage of Sensitive Information"
+      url: "https://cwe.mitre.org/data/definitions/312.html"
+    - framework: "MITRE ATT&CK"
+      id: "T1552.001"
+      name: "Credentials In Files"
+      url: "https://attack.mitre.org/techniques/T1552/001/"
+
+  PRIV-PII-PRIVATE_KEY:
+    - framework: "OWASP LLM Top 10"
+      id: "LLM02"
+      name: "Sensitive Information Disclosure"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM02_2025_Sensitive_Information_Disclosure.html"
+    - framework: "CWE"
+      id: "CWE-321"
+      name: "Use of Hard-coded Cryptographic Key"
+      url: "https://cwe.mitre.org/data/definitions/321.html"
+    - framework: "MITRE ATT&CK"
+      id: "T1552.004"
+      name: "Private Keys"
+      url: "https://attack.mitre.org/techniques/T1552/004/"
+
+  PRIV-010:
+    - framework: "OWASP LLM Top 10"
+      id: "LLM04"
+      name: "Data and Model Poisoning"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM04_2025_Data_and_Model_Poisoning.html"
+    - framework: "MITRE ATLAS"
+      id: "AML.T0020"
+      name: "Poison Training Data"
+      url: "https://atlas.mitre.org/techniques/AML.T0020"
+    - framework: "EU AI Act"
+      id: "Art. 10"
+      name: "Data and data governance"
+      url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+    - framework: "NIST AI RMF"
+      id: "MAP 2.1"
+      name: "AI risk categories are identified"
+      url: "https://airc.nist.gov/Docs/1"
+
+  PRIV-011:
+    - framework: "EU AI Act"
+      id: "Art. 10"
+      name: "Data and data governance"
+      url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+    - framework: "NIST AI RMF"
+      id: "MAP 2.1"
+      name: "AI risk categories are identified"
+      url: "https://airc.nist.gov/Docs/1"
+    - framework: "ISO/IEC 42001"
+      id: "8.5"
+      name: "Data for AI systems"
+      url: "https://www.iso.org/standard/81230.html"
+
+  PRIV-015:
+    - framework: "NIST AI RMF"
+      id: "GOVERN 1.2"
+      name: "Accountability for AI risks is established"
+      url: "https://airc.nist.gov/Docs/1"
+    - framework: "EU AI Act"
+      id: "Art. 13"
+      name: "Transparency and provision of information"
+      url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+    - framework: "ISO/IEC 42001"
+      id: "8.4"
+      name: "Documentation of AI system"
+      url: "https://www.iso.org/standard/81230.html"
+
+  PRIV-016:
+    - framework: "MITRE ATLAS"
+      id: "AML.T0024"
+      name: "Exfiltration via ML Inference API"
+      url: "https://atlas.mitre.org/techniques/AML.T0024"
+    - framework: "OWASP LLM Top 10"
+      id: "LLM02"
+      name: "Sensitive Information Disclosure"
+      url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/LLM02_2025_Sensitive_Information_Disclosure.html"
+    - framework: "NIST AI RMF"
+      id: "MEASURE 2.5"
+      name: "Privacy risk measurement"
+      url: "https://airc.nist.gov/Docs/1"
+    - framework: "EU AI Act"
+      id: "Art. 10"
+      name: "Data and data governance"
+      url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+
+  PRIV-018:
+    - framework: "EU AI Act"
+      id: "Art. 10"
+      name: "Data and data governance"
+      url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+    - framework: "NIST AI RMF"
+      id: "MAP 2.1"
+      name: "AI risk categories are identified"
+      url: "https://airc.nist.gov/Docs/1"
+    - framework: "ISO/IEC 42001"
+      id: "8.5"
+      name: "Data for AI systems"
+      url: "https://www.iso.org/standard/81230.html"
+
+  PRIV-020:
+    - framework: "NIST AI RMF"
+      id: "MAP 1.1"
+      name: "Context is established for AI risk assessment"
+      url: "https://airc.nist.gov/Docs/1"
+    - framework: "EU AI Act"
+      id: "Art. 13"
+      name: "Transparency and provision of information"
+      url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+    - framework: "ISO/IEC 42001"
+      id: "8.5"
+      name: "Data for AI systems"
+      url: "https://www.iso.org/standard/81230.html"

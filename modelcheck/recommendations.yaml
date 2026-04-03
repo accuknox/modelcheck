@@ -1,0 +1,253 @@
+# modelcheck Security Recommendation Catalogue
+# ─────────────────────────────────────────────────────────────────────────────
+# Each recommendation has a stable ID (REC-xxx), display metadata, ordered
+# action steps, and a `triggers` block that the Python engine evaluates.
+#
+# triggers fields:
+#   finding_ids       – list of finding IDs; any match fires this recommendation
+#   finding_prefixes  – ID prefix patterns (e.g. ADV-LLM-); any match fires
+#   finding_id_sev    – {id: min_severity}; fires only when the finding meets
+#                       the stated minimum severity (critical>high>medium>low>info)
+#   score_below       – fires when the overall security score is below this value
+#   never             – set true to disable the recommendation entirely
+# ─────────────────────────────────────────────────────────────────────────────
+
+version: "1.0"
+
+recommendations:
+
+  - id: REC-BLOCK
+    priority: critical
+    category: "Deployment Decision"
+    icon: x
+    title: "Do Not Deploy — Potentially Malicious Content Detected"
+    description: >-
+      One or more security scanners have flagged this model as containing unsafe
+      or malicious content. Loading or running the model poses an immediate risk
+      of arbitrary code execution or supply-chain compromise. No deployment —
+      including sandboxed — is recommended until a thorough forensic investigation
+      is completed.
+    actions:
+      - "Quarantine the model files immediately and restrict all access"
+      - "Do NOT load or execute any weight files (.pkl, .pt, .bin, .ckpt, .pth)"
+      - "Report the model to HuggingFace Trust & Safety if hosted on Hub"
+      - "Preserve all artefacts for forensic investigation before any cleanup"
+      - "Audit every system that has already loaded this model for indicators of compromise"
+      - "Replace with an established alternative from a known, trusted organisation"
+    triggers:
+      finding_ids: [PROV-001, FSEC-HF-001]
+      finding_prefixes: []
+      finding_id_sev:
+        FSEC-PKL-001: critical
+      score_below: null
+
+  - id: REC-SANDBOX
+    priority: high
+    category: "Deployment Decision"
+    icon: box
+    title: "Deploy in an Isolated Sandbox Environment"
+    description: >-
+      This model has not been confirmed safe for unrestricted production use.
+      Key risks include unvetted authorship, pickle-format weights, or live
+      adversarial probes that were triggered. Use container isolation and network
+      restrictions to contain the blast radius of any unexpected behaviour.
+    actions:
+      - "Run inference inside a dedicated container with no outbound network access (--network=none)"
+      - "Mount model files read-only; restrict writes to a dedicated /tmp volume only"
+      - "Apply strict CPU and memory resource limits to the inference process"
+      - "Use a seccomp/AppArmor profile to block execve, socket, and fork syscalls"
+      - "Enable detailed audit logging for every inference request and response"
+      - "Enforce strong rate limiting and authentication on the inference endpoint"
+      - "Perform a manual review of all model weight files before any wider rollout"
+    triggers:
+      finding_ids: [FSEC-001, FSEC-002]
+      finding_prefixes: [ADV-LLM-, FSEC-PKL-]
+      finding_id_sev:
+        PROV-010: high
+      score_below: 65
+
+  - id: REC-CREDS
+    priority: critical
+    category: "Credential Security"
+    icon: key
+    title: "Rotate Exposed Credentials Immediately"
+    description: >-
+      Credentials or private keys were detected in the model artefacts or
+      documentation. These must be treated as fully compromised — any party
+      that downloaded this model has access to these secrets. Rotation
+      cannot wait.
+    actions:
+      - "Immediately revoke and rotate every API key, token, and secret identified in the findings"
+      - "Audit access logs for the compromised credentials to detect unauthorised use"
+      - "Search all public repositories and datasets for further exposure of these secrets"
+      - "Remove the credentials from the model card / README and purge git history (git-filter-repo)"
+      - "Migrate to a secrets-management solution (HashiCorp Vault, AWS Secrets Manager, etc.)"
+      - "Enable alerting for future leaks (GitHub secret scanning, truffleHog CI hook)"
+    triggers:
+      finding_ids: [PRIV-PII-API_KEY, PRIV-PII-AWS_KEY, PRIV-PII-PRIVATE_KEY]
+      finding_prefixes: []
+      finding_id_sev: {}
+      score_below: null
+
+  - id: REC-GUARDRAILS
+    priority: high
+    category: "Runtime Security Controls"
+    icon: shield
+    title: "Add Input / Output Guardrails Before Serving This Model"
+    description: >-
+      Live adversarial probes triggered unsafe responses — including jailbreaks,
+      prompt injection, or system-prompt extraction. The model must not be
+      exposed to untrusted user input without a defensive wrapper in place.
+    actions:
+      - "Add a prompt classification layer to detect and reject jailbreak patterns before they reach the model"
+      - "Implement semantic similarity checks against known injection/jailbreak templates"
+      - "Apply output classification to block harmful completions from being returned to users"
+      - "Use a moderation model (LlamaGuard, OpenAI Moderation API) as a second-pass filter"
+      - "Sanitise all user input: apply NFKC Unicode normalisation, strip invisible/control characters"
+      - "Enforce system-prompt confidentiality: never echo or reference it in completions"
+      - "Rate-limit and monitor per-user inference to detect systematic probing attempts"
+      - "Set up real-time alerting on anomalous output patterns or refusal-rate changes"
+    triggers:
+      finding_ids: []
+      finding_prefixes: [ADV-LLM-]
+      finding_id_sev: {}
+      score_below: null
+
+  - id: REC-LEGAL
+    priority: high
+    category: "Legal & Compliance"
+    icon: book
+    title: "Complete a Legal Review Before Commercial Use"
+    description: >-
+      The model has no declared license or uses a license that restricts
+      commercial use, creating undefined legal exposure for any downstream
+      deployment. Do not use commercially until licensing is resolved.
+    actions:
+      - "Engage your legal team to assess the licensing situation before any production deployment"
+      - "Contact the model author directly to request written license clarification"
+      - "Check the HuggingFace model card and linked repositories for any license file"
+      - "Do not use the model in commercial products or services without explicit permission"
+      - "Document the license status (or lack thereof) in your internal model registry"
+      - "Consider switching to a model with a clear permissive license (Apache-2.0, MIT)"
+    triggers:
+      finding_ids: [PROV-004, PROV-005]
+      finding_prefixes: []
+      finding_id_sev: {}
+      score_below: null
+
+  - id: REC-PROVENANCE
+    priority: high
+    category: "Supply Chain"
+    icon: trending
+    title: "Verify Model Provenance Through Independent Channels"
+    description: >-
+      The model's author cannot be independently verified, comes from an
+      individual with low community presence, or lacks integrity checksums
+      on weight files. This raises the risk of tampered or mislabelled models.
+    actions:
+      - "Cross-reference the author's identity via GitHub, academic papers, or institutional pages"
+      - "Download the model from its original source and verify SHA256 checksums independently"
+      - "Check whether the model matches any published architecture description or paper"
+      - "Prefer models from known organisations or individuals with substantial track records (1000+ followers)"
+      - "Register the model in your internal catalogue with full provenance metadata before use"
+      - "Set up automated checksum verification in your model deployment pipeline"
+    triggers:
+      finding_ids: [PROV-002, PROV-007, PROV-L003]
+      finding_prefixes: []
+      finding_id_sev:
+        PROV-010: medium
+      score_below: null
+
+  - id: REC-SAFETENSORS
+    priority: medium
+    category: "File Security"
+    icon: file
+    title: "Migrate Model Weights to SafeTensors Format"
+    description: >-
+      The model uses pickle-based weight files (.bin, .pt, .pth, .ckpt).
+      Pickle deserialisation can execute arbitrary Python on load, making it
+      an inherent attack surface. SafeTensors eliminates this risk by design
+      and adds header-based integrity checking.
+    actions:
+      - "Convert weights using the safetensors library: safetensors.torch.save_file(state_dict, 'model.safetensors')"
+      - "Verify the converted SafeTensors file produces identical outputs to the original"
+      - "Compute and publish SHA256 checksums for all SafeTensors files"
+      - "Update model loading code to use safetensors.torch.load_file() instead of torch.load()"
+      - "If using HuggingFace Hub, upload the SafeTensors version and mark it as preferred"
+      - "Retire and delete pickle-format weights once SafeTensors is validated in production"
+    triggers:
+      finding_ids: [FSEC-001, FSEC-002]
+      finding_prefixes: [FSEC-PKL-]
+      finding_id_sev: {}
+      score_below: null
+
+  - id: REC-GDPR
+    priority: medium
+    category: "Legal & Compliance"
+    icon: layers
+    title: "Conduct a GDPR / CCPA Compliance Assessment"
+    description: >-
+      The model was likely trained on web-scraped data without explicit consent
+      disclosures. Deploying such a model in the EU or California may violate
+      GDPR or CCPA without a lawful basis for processing the underlying personal data.
+    actions:
+      - "Audit training datasets for inclusion of EU or California residents' personal data"
+      - "Assess whether a GDPR-compliant legal basis exists for each training dataset"
+      - "Implement a data subject rights process: right of access, rectification, and erasure"
+      - "Document training data provenance and consent mechanisms in a Data Processing Agreement (DPA)"
+      - "Evaluate differential privacy (DP-SGD) for any future fine-tuning runs on personal data"
+      - "For EU-facing deployments, conduct a Data Protection Impact Assessment (DPIA)"
+    triggers:
+      finding_ids: [PRIV-018, PRIV-015]
+      finding_prefixes: []
+      finding_id_sev:
+        PRIV-010: medium
+        PRIV-011: medium
+      score_below: null
+
+  - id: REC-MI
+    priority: medium
+    category: "Privacy Controls"
+    icon: users
+    title: "Restrict Output Exposure to Limit Membership Inference"
+    description: >-
+      The model's training pipeline and task type create elevated susceptibility
+      to membership inference attacks, allowing an adversary to determine whether
+      a specific individual's data was used in training. Restricting output
+      information reduces this leakage significantly.
+    actions:
+      - "Do not expose raw logits or full probability distributions in your inference API"
+      - "Apply output discretisation: return top-1 or top-k (small k ≤ 5) predictions only"
+      - "Add calibrated noise to probability outputs (Laplace or Gaussian mechanism)"
+      - "Enforce strict per-user rate limits to slow systematic membership probing"
+      - "Evaluate differential privacy during any future fine-tuning run (DP-SGD via Opacus)"
+      - "Log and monitor abnormal inference patterns that may indicate membership probing"
+    triggers:
+      finding_ids: []
+      finding_prefixes: []
+      finding_id_sev:
+        PRIV-016: medium
+      score_below: null
+
+  - id: REC-MONITOR
+    priority: low
+    category: "Operational Security"
+    icon: eye
+    title: "Implement Continuous Runtime Monitoring"
+    description: >-
+      Even models that pass all static checks can exhibit unexpected behaviour
+      in production. Ongoing monitoring of inference traffic, model outputs,
+      and resource usage provides early warning of misuse, model drift, or
+      active exploitation.
+    actions:
+      - "Log every inference request (input hash, output hash, latency, user/session ID)"
+      - "Set up anomaly detection on output distributions to spot model drift or poisoning"
+      - "Alert on sudden changes in refusal rate, output length, or topic distribution"
+      - "Periodically re-run modelcheck scans after any model update or fine-tuning"
+      - "Monitor container/process resource usage for unexpected CPU or network spikes"
+      - "Establish an incident response playbook for AI-specific security events"
+    triggers:
+      finding_ids: []
+      finding_prefixes: []
+      finding_id_sev: {}
+      score_below: 85
